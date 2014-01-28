@@ -1,0 +1,19 @@
+{
+    "name": "immutable-resource",
+    "description": "RESTful resource which are immutable",
+    "version": "0.0.1",
+    "private": true,
+    "devDependencies": {
+        "grunt": "0.4.1",
+        "grunt-cli" : "*",
+        "grunt-jasmine-node": "*",
+        "jasmine-node" : "*"
+    },
+    "dependencies": {
+        "express": "3.x",
+        "express-resource": "1.x",
+        "node-uuid": "*",
+        "sage": "*"
+    },
+    "scripts": { "start": "node scripts/server.js" }
+}
