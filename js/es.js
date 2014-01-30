@@ -18,8 +18,13 @@ exports.clear = function (callback) {
     });
 };
 
+exports.all = function(entityType, callback) {
+    var criteria = {query: {match_all: {}}};
+    exports.find(esi.type(entityType), criteria, callback);
+};
+
 exports.get = function (entityType, id, callback) {
-    entityType.get(id, function (error, result) {
+    esi.type(entityType).get(id, function (error, result) {
         if (error != null) {
             callback(error, null);
             return;
@@ -29,11 +34,16 @@ exports.get = function (entityType, id, callback) {
 };
 
 exports.find = function (entityType, criteria, callback) {
-    esi.refresh(performFind.bind({}, entityType, criteria, callback));
+    esi.refresh(performFind.bind({}, esi.type(entityType), criteria, callback));
+};
+
+exports.findByField = function(entityType, fieldNameAndValue, callback) {
+    var criteria = {query: {field: fieldNameAndValue}};
+    exports.find(entityType, criteria, callback);
 };
 
 exports.create = function (entityType, data, callback) {
-    entityType.post(data, callback);
+    esi.type(entityType).post(data, callback);
 };
 
 function performFind(entityType, criteria, callback) {
