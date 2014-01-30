@@ -1,6 +1,7 @@
 describe('Repository', function () {
     var Repository = require('../js/repository');
-    var patientRepository = new Repository('patient');
+    var esStorage = require('../js/es');
+    var patientRepository = new Repository(esStorage, 'patient');
 
     beforeEach(function (done) {
         patientRepository.clear(done);

@@ -1,5 +1,5 @@
-module.exports = function (resourceType) {
-    this.storage = require(__dirname + '/es');
+module.exports = function (storage, resourceType) {
+    this.storage = storage;
 
     this.resourceType = resourceType;
     this.changeLogType = 'change-log';
