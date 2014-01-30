@@ -3,6 +3,8 @@ var data = {};
 var SnapshotStrategy = require(__dirname + '/snapshot/manual-snapshot-strategy');
 exports.snapshotStrategy = new SnapshotStrategy(this);
 
+exports.name = 'memory';
+
 exports.clear = function (callback) {
     data = {};
     callback();

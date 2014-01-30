@@ -1,66 +1,67 @@
-var sage = require('sage');
+module.exports = function(esUrl, indexName) {
+    var sage = require('sage');
+    var es = sage(esUrl);
+    var esi = es.index(indexName);
 
-// TODO: indexName and connect string should be configurable (potentially through konphyg)
-var indexName = 'immutable-resource';
-var es = sage("http://localhost:9200");
-var esi = es.index(indexName);
+    var SnapshotStrategy = require(__dirname + '/snapshot/manual-snapshot-strategy');
+    this.snapshotStrategy = new SnapshotStrategy(this);
 
-var SnapshotStrategy = require(__dirname + '/snapshot/manual-snapshot-strategy');
-exports.snapshotStrategy = new SnapshotStrategy(this);
+    this.name = 'elasticsearch';
 
-exports.clear = function (callback) {
-    // BE CAREFUL!!!
-    // This method SHOULD NOT be used anywhere except test
-    esi.destroy(function () {
-        esi.create(function (err, result) {
-            setTimeout(callback, 50);
+    this.clear = function (callback) {
+        // BE CAREFUL!!!
+        // This method SHOULD NOT be used anywhere except test
+        esi.destroy(function () {
+            esi.create(function (err, result) {
+                setTimeout(callback, 50);
+            });
         });
-    });
-};
+    };
 
-exports.create = function (entityType, data, callback) {
-    esi.type(entityType).post(data, callback);
-};
+    this.create = function (entityType, data, callback) {
+        esi.type(entityType).post(data, callback);
+    };
 
-exports.all = function(entityType, callback) {
-    var criteria = {query: {match_all: {}}};
-    exports.find(esi.type(entityType), criteria, callback);
-};
+    this.all = function(entityType, callback) {
+        var criteria = {query: {match_all: {}}};
+        this.find(esi.type(entityType), criteria, callback);
+    };
 
-exports.get = function (entityType, id, callback) {
-    esi.type(entityType).get(id, function (error, result) {
-        if (error != null) {
-            callback(error, null);
-            return;
-        }
-        callback(error, toDomainObject(result));
-    });
-};
+    this.get = function (entityType, id, callback) {
+        esi.type(entityType).get(id, function (error, result) {
+            if (error != null) {
+                callback(error, null);
+                return;
+            }
+            callback(error, toDomainObject(result));
+        });
+    };
 
-exports.find = function (entityType, criteria, callback) {
-    esi.refresh(performFind.bind({}, esi.type(entityType), criteria, callback));
-};
+    this.find = function (entityType, criteria, callback) {
+        esi.refresh(performFind.bind({}, esi.type(entityType), criteria, callback));
+    };
 
-exports.findByField = function(entityType, fieldNameAndValue, callback) {
-    var criteria = {query: {field: fieldNameAndValue}};
-    exports.find(entityType, criteria, callback);
-};
+    this.findByField = function(entityType, fieldNameAndValue, callback) {
+        var criteria = {query: {field: fieldNameAndValue}};
+        this.find(entityType, criteria, callback);
+    };
 
-function performFind(entityType, criteria, callback) {
-    entityType.find(criteria, processSearchResults.bind({}, callback));
-}
-
-function processSearchResults(callback, err, results) {
-    if (err != null) {
-        callback(err, []);
-        return;
+    function performFind(entityType, criteria, callback) {
+        entityType.find(criteria, processSearchResults.bind({}, callback));
     }
 
-    callback(null, results.map(toDomainObject));
-}
+    function processSearchResults(callback, err, results) {
+        if (err != null) {
+            callback(err, []);
+            return;
+        }
 
-function toDomainObject(result) {
-    var domainObject = result._source;
-    domainObject.id = result.id;
-    return domainObject;
-}
+        callback(null, results.map(toDomainObject));
+    }
+
+    function toDomainObject(result) {
+        var domainObject = result._source;
+        domainObject.id = result.id;
+        return domainObject;
+    }
+};
