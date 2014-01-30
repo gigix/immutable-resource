@@ -1,5 +1,8 @@
 var data = {};
 
+var SnapshotStrategy = require(__dirname + '/snapshot/manual-snapshot-strategy');
+exports.snapshotStrategy = new SnapshotStrategy(this);
+
 exports.clear = function (callback) {
     data = {};
     callback();

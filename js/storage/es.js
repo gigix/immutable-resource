@@ -1,12 +1,12 @@
 var sage = require('sage');
 
-// TODO: indexName and connect string should be configurable
+// TODO: indexName and connect string should be configurable (potentially through konphyg)
 var indexName = 'immutable-resource';
 var es = sage("http://localhost:9200");
-
 var esi = es.index(indexName);
 
-exports.index = esi;
+var SnapshotStrategy = require(__dirname + '/snapshot/manual-snapshot-strategy');
+exports.snapshotStrategy = new SnapshotStrategy(this);
 
 exports.clear = function (callback) {
     // BE CAREFUL!!!
@@ -16,6 +16,10 @@ exports.clear = function (callback) {
             setTimeout(callback, 50);
         });
     });
+};
+
+exports.create = function (entityType, data, callback) {
+    esi.type(entityType).post(data, callback);
 };
 
 exports.all = function(entityType, callback) {
@@ -40,10 +44,6 @@ exports.find = function (entityType, criteria, callback) {
 exports.findByField = function(entityType, fieldNameAndValue, callback) {
     var criteria = {query: {field: fieldNameAndValue}};
     exports.find(entityType, criteria, callback);
-};
-
-exports.create = function (entityType, data, callback) {
-    esi.type(entityType).post(data, callback);
 };
 
 function performFind(entityType, criteria, callback) {
