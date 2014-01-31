@@ -1,18 +1,27 @@
-function HtmlLocalStorage(snapshotStrategyClass) {
+var HtmlLocalStorage = function (snapshotStrategyClass) {
     this.data = {};
     this.name = 'html-local-storage';
     this.snapshotStrategy = new snapshotStrategyClass(this);
 
     this.clear = function (callback) {
         this.data = {};
+        localStorage.clear();
         callback();
     };
 
     this.create = function (entityType, entity, callback) {
-        entity.id = new Date().getTime();
+        entity.id = entityType + "-" + new Date().getTime();
         this.all(entityType, function (error, allEntities) {
             allEntities.push(entity);
             localStorage.setItem(entityType, JSON.stringify(allEntities));
+            callback(null, entity);
+        });
+    };
+
+    this.update = function (entityType, entity, callback) {
+        this.all(entityType, function (error, allEntities) {
+            var indexOfEntityInAll = allEntities.indexOf(entity);
+            allEntities[indexOfEntityInAll] = entity;
             callback(null, entity);
         });
     };
@@ -54,4 +63,6 @@ function HtmlLocalStorage(snapshotStrategyClass) {
         // implemented as findByField
         this.findByField(entityType, criteria, callback);
     };
-}
+};
+
+module.exports = HtmlLocalStorage;
