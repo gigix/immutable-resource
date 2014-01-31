@@ -2,9 +2,24 @@ var ManualSnapshotStrategy = function (storage) {
     this.storage = storage;
 
     this.buildSnapshot = function (loadedResource, callback) {
-        var changes = getAllChangeLogs(loadedResource);
-        applyChanges(loadedResource, changes);
-        callback(null, loadedResource);
+        var changes = loadedResource._changeLogs;
+        if (changes === undefined) {
+            changes = [];
+        }
+        if(resourceIsDeleted(changes)){
+            callback("Resource deleted", null);
+        }
+        else{
+            applyChanges(loadedResource, changes);
+            callback(null, loadedResource);
+        }
+    };
+
+    function resourceIsDeleted(changes) {
+        var deleteEvents = changes.filter(function(change){
+            return change._deleted;
+        });
+        return deleteEvents.length > 0;
     };
 
     this.createChangeLog = function (entityType, resourceId, partialObject, callback) {

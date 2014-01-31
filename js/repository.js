@@ -27,6 +27,15 @@ var Repository = function (storage, resourceType) {
     this.update = function (resourceId, partialObject, callback) {
         this.snapshotStrategy.createChangeLog(this.resourceType, resourceId, partialObject, callback);
     };
+
+    this.delete = function (resourceId, callback) {
+        var deleteEvent = {
+            _deleted: "true"
+        };
+        this.update(resourceId, deleteEvent, function(error, result) {
+            callback(!error);
+        });
+    }
 };
 
 module.exports = Repository;
