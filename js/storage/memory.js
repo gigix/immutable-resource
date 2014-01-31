@@ -18,6 +18,15 @@ exports.create = function (entityType, entity, callback) {
     });
 };
 
+exports.update = function (entityType, entity, callback) {
+    exports.get(entityType, entity.id, function (error, existingEntity) {
+        for (var key in entity) {
+            existingEntity[key] = entity[key];
+        }
+        callback(null, entity);
+    });
+};
+
 exports.all = function (entityType, callback) {
     if (data[entityType] == undefined) {
         data[entityType] = [];

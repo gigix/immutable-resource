@@ -25,6 +25,6 @@ module.exports = function (storage, resourceType) {
     };
 
     this.update = function (resourceId, partialObject, callback) {
-        this.snapshotStrategy.createChangeLog(resourceId, partialObject, callback);
+        this.snapshotStrategy.createChangeLog(this.resourceType, resourceId, partialObject, callback);
     };
 };

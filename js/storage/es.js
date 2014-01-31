@@ -22,6 +22,10 @@ module.exports = function(esUrl, indexName) {
         esi.type(entityType).post(data, callback);
     };
 
+    this.update = function (entityType, entity, callback) {
+        esi.type(entityType).put(entity, callback);
+    };
+
     this.all = function(entityType, callback) {
         var criteria = {query: {match_all: {}}};
         this.find(esi.type(entityType), criteria, callback);

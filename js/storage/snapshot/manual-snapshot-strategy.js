@@ -3,17 +3,25 @@ module.exports = function (storage) {
     this.storage = storage;
 
     this.buildSnapshot = function (loadedResource, callback) {
-        var fieldNameAndValue = {originalResourceId: loadedResource.id};
-        this.storage.findByField(this.changeLogType, fieldNameAndValue, function (error, changes) {
-            applyChanges(loadedResource, changes);
-            callback(error, loadedResource);
-        });
+        var changes = loadedResource._changeLogs;
+        if (changes === undefined) {
+            changes = [];
+        }
+        applyChanges(loadedResource, changes);
+        callback(null, loadedResource);
     };
 
-    this.createChangeLog = function(resourceId, partialObject, callback) {
+    this.createChangeLog = function (entityType, resourceId, partialObject, callback) {
         partialObject.originalResourceId = resourceId;
         partialObject.timestamp = new Date().getTime();
-        this.storage.create(this.changeLogType, partialObject, callback);
+        var storage = this.storage;
+        storage.get(entityType, resourceId, function (error, resource) {
+            if (resource._changeLogs === undefined) {
+                resource._changeLogs = [];
+            }
+            resource._changeLogs.push(partialObject);
+            storage.update(entityType, resource, callback);
+        });
     };
 
     function applyChanges(origin, changes) {
