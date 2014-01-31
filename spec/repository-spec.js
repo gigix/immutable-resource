@@ -1,10 +1,35 @@
+StubLocalStorage = function () {
+    var data = {};
+
+    this.clear = function () {
+        data = {};
+    };
+
+    this.getItem = function (key) {
+        var item = data[key];
+        if (item == undefined) {
+            item = null;
+        }
+        return item;
+    };
+
+    this.setItem = function (key, value) {
+        data[key] = value;
+    };
+};
+localStorage = new StubLocalStorage();
+
 describe('Repository', function () {
     var memoryStorage = require('../js/storage/memory');
 
     var EsStorage = require('../js/storage/es');
     var esStorage = new EsStorage('http://localhost:9200', 'immutable-resource');
 
-    [memoryStorage, esStorage].forEach(function (storage) {
+    var HtmlLocalStorage = require('../js/storage/html-local-storage');
+    var ManualSnapshotStrategy = require('../js/storage/snapshot/manual-snapshot-strategy');
+    var htmlLocalStorage = new HtmlLocalStorage(ManualSnapshotStrategy);
+
+    [memoryStorage, esStorage, htmlLocalStorage].forEach(function (storage) {
         testRepositoryUponStorage(storage);
     });
 });
