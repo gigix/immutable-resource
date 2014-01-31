@@ -1,12 +1,8 @@
-module.exports = function (storage) {
-    this.changeLogType = 'change-log';
+var ManualSnapshotStrategy = function (storage) {
     this.storage = storage;
 
     this.buildSnapshot = function (loadedResource, callback) {
-        var changes = loadedResource._changeLogs;
-        if (changes === undefined) {
-            changes = [];
-        }
+        var changes = getAllChangeLogs(loadedResource);
         applyChanges(loadedResource, changes);
         callback(null, loadedResource);
     };
@@ -19,10 +15,17 @@ module.exports = function (storage) {
             if (resource._changeLogs === undefined) {
                 resource._changeLogs = [];
             }
-            resource._changeLogs.push(partialObject);
+            getAllChangeLogs(resource).push(partialObject);
             storage.update(entityType, resource, callback);
         });
     };
+
+    function getAllChangeLogs(resource) {
+        if (resource._changeLogs === undefined) {
+            resource._changeLogs = [];
+        }
+        return resource._changeLogs;
+    }
 
     function applyChanges(origin, changes) {
         var keysInOrigin = getAllKeys(origin);
@@ -43,3 +46,5 @@ module.exports = function (storage) {
         return keys;
     }
 };
+
+module.exports = ManualSnapshotStrategy;

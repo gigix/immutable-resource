@@ -9,7 +9,7 @@ function HtmlLocalStorage(snapshotStrategyClass) {
     };
 
     this.create = function (entityType, entity, callback) {
-        entity.id = new Date().getTime();
+        entity.id = entityType + "-" + new Date().getTime();
         this.all(entityType, function (error, allEntities) {
             allEntities.push(entity);
             localStorage.setItem(entityType, JSON.stringify(allEntities));

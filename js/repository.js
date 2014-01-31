@@ -1,4 +1,4 @@
-module.exports = function (storage, resourceType) {
+var Repository = function (storage, resourceType) {
     this.resourceType = resourceType;
     this.storage = storage;
     this.snapshotStrategy = storage.snapshotStrategy;
@@ -28,3 +28,5 @@ module.exports = function (storage, resourceType) {
         this.snapshotStrategy.createChangeLog(this.resourceType, resourceId, partialObject, callback);
     };
 };
+
+module.exports = Repository;
