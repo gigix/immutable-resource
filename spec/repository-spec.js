@@ -57,5 +57,26 @@ function testRepositoryUponStorage(storage) {
                 });
             });
         });
+
+        describe('delete', function() {
+            it("should return true if delete was successful", function (done) {
+                var newPatient = {
+                    firstName: 'Jie',
+                    lastName: 'Xiong'
+                };
+                patientRepository.create(newPatient, function(error, persistedPatientId) {
+                    patientRepository.delete(persistedPatientId, function(resourceDeleted) {
+                        expect(resourceDeleted).toBe(true);
+                        patientRepository.load(persistedPatientId, function (error, loadedPatient){
+                            expect(error).not.toBeNull();
+                            expect(loadedPatient).toBeNull();
+                            done();
+                        });
+                    });
+                });
+            });
+        })
     });
 }
+
+

@@ -7,8 +7,20 @@ module.exports = function (storage) {
         if (changes === undefined) {
             changes = [];
         }
-        applyChanges(loadedResource, changes);
-        callback(null, loadedResource);
+        if(resourceIsDeleted(changes)){
+            callback("Resource deleted", null);
+        }
+        else{
+            applyChanges(loadedResource, changes);
+            callback(null, loadedResource);
+        }
+    };
+
+    function resourceIsDeleted(changes) {
+        var deleteEvents = changes.filter(function(change){
+            return change._deleted;
+        });
+        return deleteEvents.length > 0;
     };
 
     this.createChangeLog = function (entityType, resourceId, partialObject, callback) {
