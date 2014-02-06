@@ -17,7 +17,6 @@ StubLocalStorage = function () {
         data[key] = value;
     };
 };
-localStorage = new StubLocalStorage();
 
 describe('Repository', function () {
     var memoryStorage = require('../js/storage/memory');
@@ -27,7 +26,7 @@ describe('Repository', function () {
 
     var HtmlLocalStorage = require('../js/storage/html-local-storage');
     var ManualSnapshotStrategy = require('../js/storage/snapshot/manual-snapshot-strategy');
-    var htmlLocalStorage = new HtmlLocalStorage(ManualSnapshotStrategy);
+    var htmlLocalStorage = new HtmlLocalStorage(ManualSnapshotStrategy, new StubLocalStorage());
 
     [memoryStorage, esStorage, htmlLocalStorage].forEach(function (storage) {
         testRepositoryUponStorage(storage);

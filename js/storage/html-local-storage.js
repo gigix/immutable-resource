@@ -1,11 +1,11 @@
-var HtmlLocalStorage = function (snapshotStrategyClass) {
+var HtmlLocalStorage = function (snapshotStrategyClass, stringHashStorage) {
     this.data = {};
     this.name = 'html-local-storage';
     this.snapshotStrategy = new snapshotStrategyClass(this);
 
     this.clear = function (callback) {
         this.data = {};
-        localStorage.clear();
+        stringHashStorage.clear();
         callback();
     };
 
@@ -13,7 +13,7 @@ var HtmlLocalStorage = function (snapshotStrategyClass) {
         entity.id = entityType + "-" + new Date().getTime();
         this.all(entityType, function (error, allEntities) {
             allEntities.push(entity);
-            localStorage.setItem(entityType, JSON.stringify(allEntities));
+            stringHashStorage.setItem(entityType, JSON.stringify(allEntities));
             callback(null, entity);
         });
     };
@@ -28,7 +28,7 @@ var HtmlLocalStorage = function (snapshotStrategyClass) {
 
     this.all = function (entityType, callback) {
         if (this.data[entityType] == undefined) {
-            var entitiesInLocalStorage = JSON.parse(localStorage.getItem(entityType));
+            var entitiesInLocalStorage = JSON.parse(stringHashStorage.getItem(entityType));
             if (entitiesInLocalStorage != null) {
                 this.data[entityType] = entitiesInLocalStorage;
             } else {
